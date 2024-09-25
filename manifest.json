@@ -1,0 +1,53 @@
+// {
+//   "manifest_version": 3,
+//   "name": "Fake News Detection Extension",
+//   "description": "A Chrome extension that predicts whether news articles are likely to be fake or not",
+//   "version": "1.0",
+//   "icons": {
+//     "16": "img/img-01-transformed.png",
+//     "48": "img/img-01-transformed.png",
+//     "128": "img/img-01-transformed.png"
+//   },
+//   "action": {
+//     "default_popup": "popup.html"
+//   },
+//   "host_permissions": ["http://127.0.0.1:5000/"],
+//   "permissions": ["activeTab", "scripting"],
+//   "web_accessible_resources": [
+//     {
+//       "resources": ["popup.js"],
+//       "matches": ["http://*/*", "https://*/*"]
+//     }
+//   ]
+// }
+{
+  "manifest_version": 3,
+  "name": "Fake News Detection Extension",
+  "description": "A Chrome extension that predicts whether news articles are likely to be fake or not",
+  "version": "1.0",
+  "icons": {
+    "16": "img/img-01-transformed.png",
+    "48": "img/img-01-transformed.png",
+    "128": "img/img-01-transformed.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "host_permissions": ["http://127.0.0.1:5000/"],
+  "permissions": ["activeTab", "storage", "scripting"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "popup.js",
+        "results.html",
+        "results.js",
+        "img/img-01-transformed.png",
+        "img/loading.gif"
+      ],
+      "matches": ["http://*/*", "https://*/*"]
+    }
+  ]
+}

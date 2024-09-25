@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Fake News Detection Result</title>
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #f4f6f9;
+        font-family: "Roboto", sans-serif;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        width: 700px;
+      }
+      h1 {
+        font-size: 24px;
+        color: #333;
+        margin-bottom: 20px;
+        margin-top: 60px; /* Add margin at the top */
+      }
+
+      p {
+        font-size: 16px;
+        color: #555;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      #prediction-result {
+        font-size: 22px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+      }
+      p#news-text {
+        font-weight: bold;
+        font-size: 18px;
+        color: #333;
+        text-align: center;
+        margin-bottom: 20px;
+        background-color: #e33131; /* Red background similar to the screenshot */
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+      }
+      button {
+        padding: 8px 15px;
+        font-size: 14px;
+        color: white;
+        background-color: #4caf50;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      ul {
+        list-style-type: none;
+        padding: 0;
+        width: 100%;
+        max-width: 600px;
+      }
+      li {
+        margin: 10px 0;
+        padding: 15px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s;
+      }
+      li:hover {
+        transform: scale(1.02);
+      }
+      li a {
+        text-decoration: none;
+        font-weight: bold;
+        color: #4caf50;
+      }
+      li a:hover {
+        color: #388e3c;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>News Classification Result</h1>
+    <p id="news-text"></p>
+    <p id="prediction-result"></p>
+    <button id="feedback-button">Give Feedback</button>
+    <h2>Related Articles (Evidence):</h2>
+    <ul id="evidence-list"></ul>
+    <script src="results.js"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+modified_dataset.csv
+WELFake_Dataset.csv
+news.csv
+concatenated_dataset.csv
+all_test.tsv
+all_train.tsv
+politifact_dataset.csv
+politifact_testing_data.csv
+politifact_training_data.csv
+Welfake_politifact_modified.csv
+welfake_testing_data.csv
+welfake_training_data.csv
+Carbon emission
+best_model.h5
+Malware_dataset.csv
+cleaned_dataset.csv
+ghg-emissions2.csv
+ NLP - Fake News Classification using Machine Learning Classifier.ipynb
+bert_transformer_attention_model.h5

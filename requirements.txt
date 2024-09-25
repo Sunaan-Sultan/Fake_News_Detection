@@ -1,0 +1,9 @@
+scikit-learn
+pandas
+numpy
+seaborn
+matplotlib
+plotly
+nltk
+transformers
+flask
