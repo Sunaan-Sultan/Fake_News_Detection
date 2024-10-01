@@ -1,26 +1,40 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-import pickle
+import smtplib
+import logging
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 import tensorflow as tf
 from transformers import BertTokenizer, TFBertModel
 from tensorflow.keras.models import load_model
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
-import pandas as pd
-from sklearn.model_selection import train_test_split
-from tcn import TCN
-import requests
 import spacy
-from sklearn.metrics.pairwise import cosine_similarity
+import requests
+from tcn import TCN
+from flask_mail import Mail, Message
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
-NEWS_API_KEY = '45a02f09ffc4451c9876dcd61c7bbb6a'
+# Configuration for Flask-Mail
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'  
+app.config['MAIL_PORT'] = 587  
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'dev1925004@gmail.com'  
+app.config['MAIL_PASSWORD'] = ''  
+app.config['MAIL_DEFAULT_SENDER'] = 'dev1925004@gmail.com'  
+app.config['MAIL_SUPPRESS_SEND'] = False  
+
+mail = Mail(app)
+
+NEWS_API_KEY = ''
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Load the BERT-TCN model with custom objects for TFBertModel and TCN
 custom_objects = {'TFBertModel': TFBertModel, 'TCN': TCN}
-model = load_model('bert_transformer_attention_model.h5', custom_objects=custom_objects)
+model = load_model('best_model.h5', custom_objects=custom_objects)
 
 # Load the BERT tokenizer
 bt_tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -43,14 +57,49 @@ def preprocess_input(news, max_length=128):
         'attention_mask': encoded['attention_mask']  # This will be (1, 128)
     }
 
+# Function to extract key entities and phrases
+import numpy as np
 
-# Function to extract the first 5 words from the input news text
-def extract_first_few_words(news, num_words=5):
-    return ' '.join(news.split()[:num_words])  # Extract first 'num_words' words
+def extract_key_phrases_and_entities(text, num_phrases=5):
+    # Extract named entities using spaCy
+    doc = nlp(text)
+    entities = [ent.text for ent in doc.ents]
 
+    # Use TF-IDF to extract important phrases
+    tfidf_vectorizer = TfidfVectorizer(
+        max_df=1.0,
+        min_df=1,
+        stop_words='english',
+        max_features=10000,
+        ngram_range=(1, 3)
+    )
+
+    # Fit the vectorizer and transform the text to get the TF-IDF matrix
+    tfidf_matrix = tfidf_vectorizer.fit_transform([text])
     
+    # Get feature names (phrases) and their corresponding TF-IDF scores
+    phrases = tfidf_vectorizer.get_feature_names_out()
+    scores = tfidf_matrix.toarray()[0]
+    
+    # Combine phrases with their scores and sort by score
+    phrase_score_pairs = list(zip(phrases, scores))
+    sorted_phrases = sorted(phrase_score_pairs, key=lambda x: x[1], reverse=True)
+    
+    # Select the top `num_phrases` phrases based on their scores
+    key_phrases = [phrase for phrase, score in sorted_phrases[:num_phrases]]
+
+    # Combine entities and key phrases
+    return entities + key_phrases
+
+
+def generate_query(text):
+    key_phrases_and_entities = extract_key_phrases_and_entities(text)
+    # Join entities and key phrases into a single search query string
+    query = ' '.join(key_phrases_and_entities[:5])  # Limit to 5 items to keep the query concise
+    return query
+
 def fetch_related_articles(query):
-    url = f'https://newsapi.org/v2/everything?q={query}&apiKey={NEWS_API_KEY}'
+    url = f'https://newsapi.org/v2/everything?q={query}&apiKey={NEWS_API_KEY}&pageSize=5'
     response = requests.get(url)
     articles = []
     
@@ -62,22 +111,9 @@ def fetch_related_articles(query):
                 'url': article['url'],
                 'snippet': article['description'] or 'No description available'
             })
+    else:
+        articles.append({'title': 'No articles found', 'url': '#', 'snippet': 'Try a different query.'})
     return articles
-
-
-# Get BERT embedding for similarity calculation
-def get_embedding(text):
-    encoded_input = bt_tokenizer(
-        text, 
-        return_tensors='tf', 
-        truncation=True, 
-        max_length=128, 
-        padding=True
-    )
-    # Pass only input_ids and attention_mask, ignoring token_type_ids
-    output = model([encoded_input['input_ids'], encoded_input['attention_mask']])
-    return output.last_hidden_state[:, 0, :]
-
 
 @app.route('/')
 def home():
@@ -90,50 +126,51 @@ def predict():
         preprocessed_text = preprocess_input(text)
 
         # Make prediction using the BERT-TCN model
-        prediction = model.predict([preprocessed_text['input_ids'], preprocessed_text['attention_mask']])
-        pred_label = 'FAKE' if prediction < 0.5 else 'REAL'
+        prediction = model.predict([preprocessed_text['input_ids'], preprocessed_text['attention_mask']])[0][0]
+        print(f'Prediction value: {prediction}')
 
-        # Extract the first few words from the news text to improve article search
-        query = extract_first_few_words(text, num_words=5)
+        # Classify based on new prediction ranges
+        if prediction <= 0.3:
+            pred_label = 'False News'
+        elif 0.31 <= prediction <= 0.44:
+            pred_label = 'Mostly False'
+        elif 0.45 <= prediction <= 0.55:
+            pred_label = 'Half True'
+        elif 0.56 <= prediction <= 0.75:
+            pred_label = 'Mostly True'
+        else:
+            pred_label = 'True News'
 
-        # Fetch related articles using the extracted query
+        # Generate a query using key phrases and entities extracted from the text
+        query = generate_query(text)
+
+        # Fetch related articles using the generated query
         related_articles = fetch_related_articles(query)
 
         return jsonify({'prediction': pred_label, 'evidence': related_articles})
     else:
         return jsonify({'prediction': 'Something went wrong'})
+                    
 
-
+@app.route('/send_feedback', methods=['POST'])
+def send_feedback():
+    feedback = request.form['feedback']
+    app.logger.debug(f'Received feedback: {feedback}')
+    # Create the email message
+    msg = Message(
+        subject="New Feedback Received",
+        recipients=['sunaansultan5@gmail.com'],  # The recipient's email address
+        body=f"Feedback: {feedback}"
+    )
+    try:
+        # Send the email
+        mail.send(msg)
+        app.logger.debug('Feedback sent successfully!')
+        return jsonify({'status': 'Feedback sent successfully!'})
+    except Exception as e:
+        app.logger.error(f"Error sending email: {e}")
+        return jsonify({'status': 'Failed to send feedback.'})
+    
 if __name__ == '__main__':
     app.run(debug=True)
 
-# # tfvect = TfidfVectorizer(stop_words='english', max_df=0.7)
-# tfvect = pickle.load(open('vectorizer.pkl', 'rb'))
-# loaded_model = pickle.load(open('92_DT_model.pkl', 'rb'))
-# data = pd.read_csv('WELFake_Dataset.csv')
-
-
-# def fake_news_det(news):
-#     # tfid_x_train = tfvect.fit_transform(x_train)
-#     # tfid_x_test = tfvect.transform(x_test)
-#     input_data = [news]
-#     vectorized_input_data = tfvect.transform(input_data)
-#     prediction = loaded_model.predict(vectorized_input_data)
-#     return prediction[0]
-
-# @app.route('/')
-# def home():
-#     return render_template('index.html')
-
-# @app.route('/predict', methods=['POST'])
-# def predict():
-#     if request.method == 'POST':
-#         text = request.form['text']
-#         pred = fake_news_det(text)
-#         print(pred)
-#         return jsonify({'prediction': pred})  # Return prediction as JSON
-#     else:
-#         return jsonify({'prediction': 'Something went wrong'})  # Return error as JSON
-
-# if __name__ == '__main__':
-#     app.run(debug=True)

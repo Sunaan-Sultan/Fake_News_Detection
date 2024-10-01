@@ -3,47 +3,73 @@
   <head>
     <title>Fake News Detection Result</title>
     <style>
+      @font-face {
+        font-family: "Kole";
+        src: url("fonts/Kole Extra Bold.ttf") format("truetype"); /* Adjust the path as necessary */
+        font-weight: normal;
+        font-style: normal;
+      }
       body {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         background-color: #f4f6f9;
-        font-family: "Roboto", sans-serif;
+        font-family: "Kole";
         height: 100vh;
+        width: 700px;
         margin: 0;
         padding: 20px;
-        width: 700px;
+        /* width: 100%; Make it responsive */
+        overflow-y: auto; /* Allow scrolling */
       }
       h1 {
         font-size: 24px;
         color: #333;
-        margin-bottom: 20px;
-        margin-top: 60px; /* Add margin at the top */
-      }
-
-      p {
-        font-size: 16px;
-        color: #555;
-        margin-bottom: 20px;
+        margin: 0;
+        padding-bottom: 20px;
         text-align: center;
-      }
-      #prediction-result {
-        font-size: 22px;
-        font-weight: bold;
-        margin-bottom: 30px;
-        text-align: center;
+        width: 100%;
       }
       p#news-text {
         font-weight: bold;
         font-size: 18px;
         color: #333;
         text-align: center;
-        margin-bottom: 20px;
-        background-color: #e33131; /* Red background similar to the screenshot */
-        color: white;
         padding: 20px;
         border-radius: 8px;
+        margin-bottom: 20px;
+        width: 90%; /* Use a percentage for better responsiveness */
+        max-width: 700px; /* Ensure it doesn't grow too wide */
+      }
+      p#prediction-result {
+        font-size: 22px;
+        font-weight: bold;
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+        width: 90%;
+        max-width: 700px; /* Limit the max width */
+      }
+      .fake-news {
+        background-color: #e33131; /* Red for fake news */
+        color: white;
+      }
+      .mostly-false {
+        background-color: #ff9800; /* Orange for mostly false news */
+        color: white;
+      }
+      .half-true {
+        background-color: #9e9e9e; /* Gray for half true news */
+        color: white;
+      }
+      .mostly-true {
+        background-color: #03a9f4; /* Blue for mostly true news */
+        color: white;
+      }
+      .real-news {
+        background-color: #4caf50; /* Green for true news */
+        color: white;
       }
       button {
         padding: 8px 15px;
@@ -54,15 +80,17 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s;
+        margin-bottom: 20px; /* Increase spacing */
       }
       button:hover {
-        background-color: #45a049;
+        background-color: #1df027;
       }
       ul {
         list-style-type: none;
         padding: 0;
         width: 100%;
         max-width: 600px;
+        font-family: Kole Regular;
       }
       li {
         margin: 10px 0;
@@ -83,14 +111,20 @@
       li a:hover {
         color: #388e3c;
       }
+      h2 {
+        margin-top: 40px;
+        font-size: 20px;
+        color: #333;
+        text-align: center;
+      }
     </style>
   </head>
   <body>
-    <h1>News Classification Result</h1>
+    <h1>Results</h1>
     <p id="news-text"></p>
     <p id="prediction-result"></p>
     <button id="feedback-button">Give Feedback</button>
-    <h2>Related Articles (Evidence):</h2>
+    <h2>Related Articles</h2>
     <ul id="evidence-list"></ul>
     <script src="results.js"></script>
   </body>

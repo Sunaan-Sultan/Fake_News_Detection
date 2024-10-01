@@ -19,15 +19,33 @@ document.addEventListener("DOMContentLoaded", function () {
   // Display the first line of input text
   newsTextElement.textContent = `"${firstLine}"`;
 
-  // Display prediction result and set text color based on prediction
-  if (prediction === "FAKE") {
-    predictionResultElement.textContent = "Fake News";
-    predictionResultElement.style.color = "red"; // Set text color to red for FAKE news
-  } else if (prediction === "REAL") {
-    predictionResultElement.textContent = "Real News";
-    predictionResultElement.style.color = "green"; // Set text color to green for REAL news
+  // Clear previous classes before applying a new one
+  newsTextElement.classList.remove(
+    "fake-news",
+    "mostly-false",
+    "half-true",
+    "mostly-true",
+    "real-news"
+  );
+
+  // Display prediction result and apply appropriate styles
+  if (prediction === "False News") {
+    predictionResultElement.textContent = "False News";
+    newsTextElement.classList.add("fake-news"); // Red background
+  } else if (prediction === "Mostly False") {
+    predictionResultElement.textContent = "Mostly False";
+    newsTextElement.classList.add("mostly-false"); // Orange background
+  } else if (prediction === "Half True") {
+    predictionResultElement.textContent = "Half True";
+    newsTextElement.classList.add("half-true"); // Gray background
+  } else if (prediction === "Mostly True") {
+    predictionResultElement.textContent = "Mostly True";
+    newsTextElement.classList.add("mostly-true"); // Blue background
+  } else if (prediction === "True News") {
+    predictionResultElement.textContent = "True News";
+    newsTextElement.classList.add("real-news"); // Green background
   } else {
-    predictionResultElement.textContent = prediction;
+    predictionResultElement.textContent = "Unknown Prediction";
     predictionResultElement.style.color = "black"; // Default color for other cases
   }
 

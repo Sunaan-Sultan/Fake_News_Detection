@@ -15,5 +15,6 @@ best_model.h5
 Malware_dataset.csv
 cleaned_dataset.csv
 ghg-emissions2.csv
- NLP - Fake News Classification using Machine Learning Classifier.ipynb
+NLP - Fake News Classification using Machine Learning Classifier.ipynb
 bert_transformer_attention_model.h5
+best_model.h5
