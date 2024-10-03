@@ -1,9 +1,16 @@
 document
   .getElementById("feedback-form")
   .addEventListener("submit", function (event) {
-    event.preventDefault(); // Prevent the default form submission
+    event.preventDefault();
 
-    const feedbackText = document.getElementById("feedback-text").value;
+    const feedbackText = document.getElementById("feedback-text").value.trim();
+
+    // Show error if textarea is empty
+    if (!feedbackText) {
+      document.getElementById("feedback-result").textContent =
+        "Please enter feedback before submitting.";
+      return;
+    }
 
     // Show loading spinner
     document.getElementById("loading-spinner").style.display = "block";

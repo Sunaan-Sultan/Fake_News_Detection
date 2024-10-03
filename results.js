@@ -8,11 +8,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const prediction = localStorage.getItem("prediction");
 
   // Extract the first line of the user's input text
-  let firstLine = inputText.split("\n")[0]; // Ensure first line is extracted even if there are multiple line breaks
+  let firstLine = inputText.split("\n")[0];
 
-  // Truncate the first line if too long (optional)
+  // Truncate the first line if too long
   if (firstLine.length > 150) {
-    // Adjust the character limit if needed
     firstLine = firstLine.substring(0, 150) + "...";
   }
 
@@ -28,25 +27,45 @@ document.addEventListener("DOMContentLoaded", function () {
     "real-news"
   );
 
-  // Display prediction result and apply appropriate styles
+  // Function to create an image element
+  function createImage(src, alt) {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = alt;
+    img.style.maxWidth = "100px";
+    img.style.height = "auto";
+    return img;
+  }
+
+  // Display prediction result as an image and apply appropriate styles
   if (prediction === "False News") {
-    predictionResultElement.textContent = "False News";
-    newsTextElement.classList.add("fake-news"); // Red background
+    predictionResultElement.appendChild(
+      createImage("img/false.png", "False News")
+    );
+    newsTextElement.classList.add("fake-news");
   } else if (prediction === "Mostly False") {
-    predictionResultElement.textContent = "Mostly False";
-    newsTextElement.classList.add("mostly-false"); // Orange background
+    predictionResultElement.appendChild(
+      createImage("img/mostly_false.png", "Mostly False")
+    );
+    newsTextElement.classList.add("mostly-false");
   } else if (prediction === "Half True") {
-    predictionResultElement.textContent = "Half True";
-    newsTextElement.classList.add("half-true"); // Gray background
+    predictionResultElement.appendChild(
+      createImage("img/half_true.png", "Half True")
+    );
+    newsTextElement.classList.add("half-true");
   } else if (prediction === "Mostly True") {
-    predictionResultElement.textContent = "Mostly True";
-    newsTextElement.classList.add("mostly-true"); // Blue background
+    predictionResultElement.appendChild(
+      createImage("img/mostly_true.png", "Mostly True")
+    );
+    newsTextElement.classList.add("mostly-true");
   } else if (prediction === "True News") {
-    predictionResultElement.textContent = "True News";
-    newsTextElement.classList.add("real-news"); // Green background
+    predictionResultElement.appendChild(
+      createImage("img/true.png", "True News")
+    );
+    newsTextElement.classList.add("real-news");
   } else {
     predictionResultElement.textContent = "Unknown Prediction";
-    predictionResultElement.style.color = "black"; // Default color for other cases
+    predictionResultElement.style.color = "black";
   }
 
   // Fetch evidence articles from localStorage
@@ -57,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const anchor = document.createElement("a");
       anchor.href = item.url;
       anchor.textContent = item.title;
-      anchor.target = "_blank"; // Ensure the link opens in a new tab
+      anchor.target = "_blank";
       listItem.appendChild(anchor);
       listItem.appendChild(document.createTextNode(" - " + item.snippet));
       evidenceListElement.appendChild(listItem);
@@ -68,6 +87,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document
     .getElementById("feedback-button")
     .addEventListener("click", function () {
-      window.location.href = "feedback.html"; // Redirect to feedback.html on button click
+      window.location.href = "feedback.html";
     });
 });
