@@ -23,7 +23,12 @@ app.config['MAIL_DEFAULT_SENDER'] = 'dev1925004@gmail.com'
 
 mail = Mail(app)
 
+# Google Custom Search API key and Search Engine ID
+# GOOGLE_API_KEY = 'AIzaSyAEv4CDKFE5SiKvGZndnz9A275PJx6l634'
+# SEARCH_ENGINE_ID = '20378757f8a1d40f7'
 
+GOOGLE_API_KEY = 'AIzaSyAz_2nfxi0kgF9uqRpmDCXNbyEkEui2cOo'
+SEARCH_ENGINE_ID = '20378757f8a1d40f7'
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -79,7 +84,7 @@ def generate_query(text):
     return text.strip().split('\n')[0]  # Return the first line as the query
 
 def fetch_related_articles(query):
-    url = f'https://www.googleapis.com/customsearch/v1?q={query}&cx={SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}&num=1'
+    url = f'https://www.googleapis.com/customsearch/v1?q={query}&cx={SEARCH_ENGINE_ID}&key={GOOGLE_API_KEY}&num=5'
     response = requests.get(url)
     articles = []
 
