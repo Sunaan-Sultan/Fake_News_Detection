@@ -27,8 +27,8 @@ mail = Mail(app)
 # GOOGLE_API_KEY = 'AIzaSyAEv4CDKFE5SiKvGZndnz9A275PJx6l634'
 # SEARCH_ENGINE_ID = '20378757f8a1d40f7'
 
-GOOGLE_API_KEY = 'AIzaSyAz_2nfxi0kgF9uqRpmDCXNbyEkEui2cOo'
-SEARCH_ENGINE_ID = '20378757f8a1d40f7'
+# GOOGLE_API_KEY = 'AIzaSyAz_2nfxi0kgF9uqRpmDCXNbyEkEui2cOo'
+# SEARCH_ENGINE_ID = '20378757f8a1d40f7'
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
